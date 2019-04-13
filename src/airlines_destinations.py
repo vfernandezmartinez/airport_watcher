@@ -1,7 +1,7 @@
 from collections import defaultdict
 import json
 
-from wikipedia_scrapper import get_airlines_destinations
+from wikipedia_scrapper import fetch_airlines_destinations
 
 
 class AirlinesDestinations:
@@ -10,48 +10,28 @@ class AirlinesDestinations:
         self.value = value
 
     def fetch(self):
-        self.value = get_airlines_destinations(self.airport_name)
+        self.value = fetch_airlines_destinations(self.airport_name)
 
     def compare(self, other):
-        added = defaultdict(dict)
-        changed = defaultdict(dict)
-        removed = defaultdict(dict)
+        added = defaultdict(set)
+        removed = defaultdict(set)
 
-        for airline, destinations in self.value.items():
+        these_destinations_set = {k: set(v) for k, v in self.value.items()}
+        other_destinations_set = {k: set(v) for k, v in other.value.items()}
+
+        for airline, destinations in these_destinations_set.items():
             try:
-                other_destinations = other.value[airline]
-                added_destinations, removed_destinations, changed_destinations = (
-                    self._compare_destinations(destinations, other_destinations)
-                )
-                added[airline].update(added_destinations)
-                changed[airline].update(changed_destinations)
-                removed[airline].update(removed_destinations)
+                other_destinations = other_destinations_set[airline]
+                added[airline] |= destinations - other_destinations
+                removed[airline] |= other_destinations - destinations
             except KeyError:
-                added[airline].update(destinations)
+                added[airline] |= destinations
 
-        for airline, destinations in other.value.items():
+        for airline, destinations in other_destinations_set.items():
             if airline not in self.value:
-                removed[airline].update(destinations)
+                removed[airline] |= destinations
 
-        return added, changed, removed,
-
-    @staticmethod
-    def _compare_destinations(a, b):
-        added = {}
-        changed = {}
-        removed = {}
-        for destination_name, a_attributes in a.items():
-            try:
-                if a_attributes != b[destination_name]:
-                    changed[destination_name] = a_attributes
-            except KeyError:
-                added[destination_name] = a_attributes
-
-        for destination_name, b_attributes in b.items():
-            if destination_name not in a:
-                removed[destination_name] = b_attributes
-
-        return added, changed, removed,
+        return added, removed,
 
 
 class AirlinesDestinationsSerializer:

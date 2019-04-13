@@ -1,6 +1,5 @@
 import argparse
 import requests
-import sys
 
 from airlines_destinations import AirlinesDestinations, AirlinesDestinationsSerializer
 from wikipedia_scrapper import get_details_url
@@ -13,8 +12,8 @@ def airport_watch(airport_name, bot_token, chat_id):
     serializer = AirlinesDestinationsSerializer(airport_name)
     try:
         old = serializer.read_last_known()
-        added, changed, removed = new.compare(old)
-        notification_text = render_notification(airport_name, added, changed, removed)
+        added, removed = new.compare(old)
+        notification_text = render_notification(airport_name, added, removed)
         if notification_text:
             send_to_telegram_bot(bot_token, chat_id, notification_text)
             print(notification_text)
@@ -23,8 +22,8 @@ def airport_watch(airport_name, bot_token, chat_id):
     serializer.save(new)
 
 
-def render_notification(airport_name, added, changed, removed):
-    contents = render_diff(added, changed, removed)
+def render_notification(airport_name, added, removed):
+    contents = render_diff(added, removed)
 
     return (
         '{}\n\n{}\n\nCheck here for more details: {}'.format(
@@ -34,24 +33,22 @@ def render_notification(airport_name, added, changed, removed):
     )
 
 
-def render_destinations(title, destinations_dict):
+def render_destinations(title, destinations):
     lines = []
-    if destinations_dict:
+    if destinations:
         lines.append(title)
-        for destination, attributes in destinations_dict.items():
-            lines.append(f"  - {destination} ({attributes['schedule']})")
+        for destination in sorted(destinations):
+            lines.append(f"  - {destination}")
         lines.append('')
     return lines
 
 
-def render_diff(added, changed, removed):
-    all_airlines = added.keys() | changed.keys() | removed.keys()
+def render_diff(added, removed):
     rendered_lines = []
 
-    for airline in all_airlines:
+    for airline in (added.keys() | removed.keys()):
         rendered_lines.extend(render_destinations(f'{airline} offers new destinations:', added.get(airline)))
-        rendered_lines.extend(render_destinations(f'Destinations with {airline} changed:', changed.get(airline)))
-        rendered_lines.extend(render_destinations(f'{airline} removed destinations:', removed.get(airline)))
+        rendered_lines.extend(render_destinations(f'{airline} discontinues these destinations:', removed.get(airline)))
 
     return '\n'.join(rendered_lines)
 

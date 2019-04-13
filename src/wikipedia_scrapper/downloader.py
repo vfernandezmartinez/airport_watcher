@@ -1,26 +1,25 @@
 import requests
 
 
-def get_destinations_section_wikitext(airport_name):
+def fetch_destinations_section_wikitext(airport_name):
     section = _choose_airport_page_section(airport_name)
-    return _get_section_wikitext(page=airport_name, section=section)
+    return _fetch_section_wikitext(page=airport_name, section=section)
 
 
 def _choose_airport_page_section(airport_name):
-    airlines_destinations_section = None
-    for section in _get_page_sections(page=airport_name):
-        if section['line'] == 'Airlines and destinations':
-            airlines_destinations_section = section['index']
-        elif section['line'] == 'Passenger':
-            return section['index']
+    chosen_section = None
+    for section in _fetch_page_sections(page=airport_name):
+        if (section['line'] == 'Airlines and destinations'
+                and not chosen_section) or section['line'] == 'Passenger':
+            chosen_section = section['index']
 
-    if airlines_destinations_section:
-        return airlines_destinations_section
+    if chosen_section:
+        return chosen_section
     else:
         raise ValueError(f'"Airlines and destinations" section not found in the wikipedia page for {airport_name}.')
 
 
-def _get_page_sections(page):
+def _fetch_page_sections(page):
     query_params = {
         'action': 'parse',
         'page': page,
@@ -31,7 +30,7 @@ def _get_page_sections(page):
     return r['parse']['sections']
 
 
-def _get_section_wikitext(page, section):
+def _fetch_section_wikitext(page, section):
     query_params = {
         'action': 'parse',
         'page': page,

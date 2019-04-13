@@ -1,12 +1,9 @@
-from .section_downloader import get_destinations_section_wikitext
-from .wikitext_parser import (
-    FlightSchedule,
-    get_airlines_destinations_from_wikitext
-)
+from .downloader import fetch_destinations_section_wikitext
+from .wikitext_parser import get_airlines_destinations_from_wikitext
 
 
-def get_airlines_destinations(airport_name):
-    wikitext = get_destinations_section_wikitext(airport_name)
+def fetch_airlines_destinations(airport_name):
+    wikitext = fetch_destinations_section_wikitext(airport_name)
     return get_airlines_destinations_from_wikitext(wikitext)
 
 
