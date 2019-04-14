@@ -1,7 +1,7 @@
 from collections import defaultdict
 import json
 
-from wikipedia_scrapper import fetch_airlines_destinations, get_details_url
+from wikipedia_scrapper import fetch_airlines_destinations, details_url, ScrapError
 
 
 class AirportDestinations:
@@ -68,7 +68,7 @@ class AirportDestinationsDiff:
         contents = self._render_airlines_diff()
         if contents:
             return '{}\n\n{}\n\nCheck here for more details: {}'.format(
-                self.airport_name, contents, get_details_url(self.airport_name)
+                self.airport_name, contents, details_url(self.airport_name)
             )
 
     def _render_airlines_diff(self):

@@ -1,5 +1,7 @@
 import mwparserfromhell
 
+from .exceptions import ScrapError
+
 
 UNDERSTOOD_TEMPLATE_NAMES = (
     'Airport-dest-list',
@@ -14,12 +16,12 @@ def get_airlines_destinations_from_wikitext(wikitext):
             if template.name.startswith(understood_template):
                 return _get_airlines_destinations_from_template(template)
 
-    return ValueError('No valid templates found in the wikipedia section.')
+    return ScrapError('No valid templates found in the wikipedia section.')
 
 
 def _get_airlines_destinations_from_template(template):
     if len(template.params) % 2 != 0:
-        raise ValueError("The wikipedia template doesn't have an even number of fields.")
+        raise ScrapError("The wikipedia template doesn't have an even number of fields.")
 
     iterator = iter(template.params)
     airlines_destinations = {}

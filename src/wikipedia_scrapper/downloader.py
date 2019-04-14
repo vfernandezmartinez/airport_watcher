@@ -1,5 +1,7 @@
 import requests
 
+from .exceptions import ScrapError
+
 
 def fetch_destinations_section_wikitext(airport_name):
     section = _choose_airport_page_section(airport_name)
@@ -16,7 +18,7 @@ def _choose_airport_page_section(airport_name):
     if chosen_section:
         return chosen_section
     else:
-        raise ValueError(f'"Airlines and destinations" section not found in the wikipedia page for {airport_name}.')
+        raise ScrapError(f'"Airlines and destinations" section not found in the wikipedia page for {airport_name}.')
 
 
 def _fetch_page_sections(page):
@@ -47,6 +49,9 @@ def _query_wikipedia(query_params):
         **query_params,
         'format': 'json',
     }
-    r = requests.get('https://en.wikipedia.org/w/api.php', params=params, timeout=60)
-    r.raise_for_status()
-    return r.json()
+    try:
+        r = requests.get('https://en.wikipedia.org/w/api.php', params=params, timeout=60)
+        r.raise_for_status()
+        return r.json()
+    except requests.RequestException as e:
+        raise ScrapError(f'Request to wikipedia API failed: {str(e)}')
