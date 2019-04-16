@@ -1,7 +1,11 @@
 from collections import defaultdict
 import json
+import os
 
 from wikipedia_scrapper import fetch_airlines_destinations, details_url, ScrapError
+
+
+STORAGE_DIR = '.'
 
 
 class AirportDestinations:
@@ -14,7 +18,12 @@ class AirportDestinations:
 
     @staticmethod
     def _filename(airport_name):
-        return f'{airport_name}.json'
+        return os.path.join(STORAGE_DIR, f'{airport_name}.json')
+
+    @staticmethod
+    def set_storage_dir(dir):
+        global STORAGE_DIR
+        STORAGE_DIR = dir
 
     @property
     def filename(self):

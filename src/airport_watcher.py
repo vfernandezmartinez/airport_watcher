@@ -21,6 +21,8 @@ def check_destination_changes(airport_name, bot_token, chat_id):
 
 def airport_watcher(cmd_args):
     airport_name = cmd_args.airport
+    if cmd_args.store:
+        AirportDestinations.set_storage_dir(cmd_args.store)
 
     try:
         changes = check_destination_changes(airport_name, cmd_args.bot_token, cmd_args.chat_id)
@@ -40,5 +42,6 @@ if __name__ == "__main__":
     parser.add_argument('--bot_token', required=True, help='Telegram bot token')
     parser.add_argument('--chat_id', required=True, help='Telegram chat id')
     parser.add_argument('--airport', required=True, help='Airport name')
+    parser.add_argument('--store', help='Path for storing last known airport destinations.')
     cmd_args = parser.parse_args()
     airport_watcher(cmd_args)
