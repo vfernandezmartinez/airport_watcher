@@ -16,7 +16,7 @@ def get_airlines_destinations_from_wikitext(wikitext):
             if template.name.startswith(understood_template):
                 return _get_airlines_destinations_from_template(template)
 
-    return ScrapError('No valid templates found in the wikipedia section.')
+    raise ScrapError('No valid templates found in the wikipedia section.')
 
 
 def _get_airlines_destinations_from_template(template):
@@ -35,13 +35,13 @@ def _get_airlines_destinations_from_template(template):
 
 
 def _get_airline_name(wikicode):
-    return _convert_wikicode_to_plaintext(wikicode)
+    return _convert_wikicode_to_plaintext(wikicode).split(',')[0]
 
 
 def _get_airline_destinations(wikicode):
     plaintext = _convert_wikicode_to_plaintext(wikicode)
     destinations = []
-    if plaintext and '(Services Suspended)' not in plaintext:
+    if plaintext:
         for destination_name in plaintext.split(','):
             destination_name = destination_name.split('(')[0]
             destination_name = destination_name.strip()

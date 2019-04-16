@@ -1,4 +1,6 @@
+import responses
 import unittest
+import urllib.parse
 from collections import namedtuple
 from unittest.mock import patch
 
@@ -57,3 +59,54 @@ class DownloaderTest(unittest.TestCase):
             with self.assertRaises(ScrapError):
                 downloader._choose_airport_page_section('Naples')
             mock.assert_called_once_with(page='Naples')
+
+    @responses.activate
+    def test_fetch_destinations_section_wikitext(self):
+        query_string = urllib.parse.urlencode({
+            'action': 'parse',
+            'page': 'Athens International Airport',
+            'redirects': True,
+            'prop': 'sections',
+            'format': 'json',
+        })
+        responses.add(
+            responses.GET,
+            f'{downloader.WIKIPEDIA_API_URL}?{query_string}',
+            json={
+                'parse': {
+                    'sections': [
+                        {'index': 0, 'line': 'History'},
+                        {'index': 1, 'line': 'Future development'},
+                        {'index': 2, 'line': 'Terminals'},
+                        {'index': 3, 'line': 'Airlines and destinations'},
+                        {'index': 4, 'line': 'Passenger'},
+                        {'index': 5, 'line': 'Cargo'},
+                    ]
+                }
+            }
+        )
+
+        query_string = urllib.parse.urlencode({
+            'action': 'parse',
+            'page': 'Athens International Airport',
+            'redirects': True,
+            'section': 4,
+            'prop': 'wikitext',
+            'format': 'json',
+        })
+        responses.add(
+            responses.GET,
+            f'{downloader.WIKIPEDIA_API_URL}?{query_string}',
+            json={
+                'parse': {
+                    'wikitext': {
+                        '*': 'MOCKED DATA'
+                    }
+                }
+            }
+        )
+
+        expected_wikitext = 'MOCKED DATA'
+        wikitext = downloader.fetch_destinations_section_wikitext('Athens International Airport')
+        self.assertEqual(wikitext, expected_wikitext)
+        self.assertEqual(len(responses.calls), 2)
