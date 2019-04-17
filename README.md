@@ -1,4 +1,5 @@
 # Airport Watcher
+![Screenshot (Destinations and dates are fake, intended just for demo purposes)](https://raw.githubusercontent.com/vfernandezmartinez/airport_watcher/master/.screenshot.png)
 ## Introduction
 Every once in a while, airlines introduce new flight routes. If you fly often or if you like travelling, you might want to be aware of new destinations that are reachable from your closest airport.
 
