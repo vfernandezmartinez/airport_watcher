@@ -2,32 +2,26 @@ from collections import defaultdict
 import json
 import os
 
-from wikipedia_scrapper import fetch_airlines_destinations, details_url, ScrapError
-
-
-STORAGE_DIR = '.'
+from .wikipedia_scrapper import fetch_airlines_destinations, details_url
 
 
 class AirportDestinations:
     class DestinationsUnknown(Exception):
         pass
 
+    storage_dir = '.'
+
     def __init__(self, airport_name, destinations):
         self.airport_name = airport_name
         self.destinations = destinations
 
-    @staticmethod
-    def _filename(airport_name):
-        return os.path.join(STORAGE_DIR, f'{airport_name}.json')
-
-    @staticmethod
-    def set_storage_dir(dir):
-        global STORAGE_DIR
-        STORAGE_DIR = dir
+    @classmethod
+    def _filename(cls, airport_name):
+        return os.path.join(cls.storage_dir, f'{airport_name}.json')
 
     @property
     def filename(self):
-        return self._filename(self.airport_name)
+        return os.path.join(self.storage_dir, f'{self.airport_name}.json')
 
     @classmethod
     def fetch(cls, airport_name):

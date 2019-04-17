@@ -1,6 +1,6 @@
 import unittest
 
-from wikipedia_scrapper import wikitext_parser, ScrapError
+from airport_watcher.wikipedia_scrapper import wikitext_parser, ScrapError
 
 
 class WikitextParserTest(unittest.TestCase):

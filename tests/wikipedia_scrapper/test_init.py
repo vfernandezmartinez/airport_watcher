@@ -1,6 +1,6 @@
 import unittest
 
-import wikipedia_scrapper
+from airport_watcher import wikipedia_scrapper
 
 
 class WikitextScrapperTest(unittest.TestCase):

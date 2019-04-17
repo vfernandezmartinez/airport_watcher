@@ -4,7 +4,7 @@ import urllib.parse
 from collections import namedtuple
 from unittest.mock import patch
 
-from wikipedia_scrapper import downloader, ScrapError
+from airport_watcher.wikipedia_scrapper import downloader, ScrapError
 
 
 class DownloaderTest(unittest.TestCase):
@@ -43,14 +43,14 @@ class DownloaderTest(unittest.TestCase):
 
         for test_data in test_set:
             with self.subTest(test_data=test_data._asdict()):
-                with patch('wikipedia_scrapper.downloader._fetch_page_sections') as mock:
+                with patch('airport_watcher.wikipedia_scrapper.downloader._fetch_page_sections') as mock:
                     mock.return_value = test_data.sections
                     section = downloader._choose_airport_page_section(test_data.airport_name)
                     mock.assert_called_once_with(page=test_data.airport_name)
                     self.assertEqual(section, test_data.correct_section)
 
     def test_choose_airport_page_section_not_found(self):
-        with patch('wikipedia_scrapper.downloader._fetch_page_sections') as mock:
+        with patch('airport_watcher.wikipedia_scrapper.downloader._fetch_page_sections') as mock:
             mock.return_value = [
                 {'index': 0, 'line': 'History'},
                 {'index': 1, 'line': 'Architecture'},

@@ -6,7 +6,7 @@ Airport Watcher watches the wikipedia page of your airport and keeps track of ch
 
 ## Setup
 ### Creating a Telegram bot
-In Telegram, use [@BotFather](https://t.me/BotFather) to create your own bot. Follow the instructions provided by [@BotFather](https://t.me/BotFather) and get your bot token.
+Creating a Telegram bot is really simple. In Telegram, use [@BotFather](https://t.me/BotFather) to create your own bot. Follow the instructions provided by [@BotFather](https://t.me/BotFather) and get your bot token. Please keep in mind the token should be treated with the same care as with any other API token or password.
 
 Once you have the bot created, you also need to find out your chat id. It's an 8-digit number. Use [@userinfobot](https://t.me/userinfobot) to find it out.
 
@@ -17,8 +17,10 @@ Execute the following commands to create a virtual environment and install requi
     source venv/bin/activate
     pip install -r requirements.txt
 
+Airport Watcher is now ready to be used.
+
 ## Running Airport Watcher
-You can run Airport Watcher as a daily cron job in your preferred server. It is recommended to run it with a regular non-privileged user.
+You can run Airport Watcher as a daily cron job in your preferred server, e.g. in a Raspberry Pi or in the cloud. It is recommended to run it with a regular non-privileged user.
 
 Open a terminal and type the following:
 
@@ -31,7 +33,7 @@ Then copy and paste the following line:
 Adjust the path and the parameters. This example will run it at 10:00am in your local time zone.
 
 ### Specifying storage directory
-Airport Watcher stores the last known destinations offered from each airport in a .json file. By default, files are located in the current directory. You can customize the directory where these files are stored by using the optional `--store` parameter:
+Airport Watcher stores the last known destinations offered from each airport in a .json file. This is required in order to be able to detect changes since the last run. By default, files are located in the current directory. You can customize the directory where these files are stored by using the optional `--store` parameter:
 
     ./run.sh --store /tmp --airport 'Mexico City International Airport' --bot_token <your_telegram_bot_token> --chat_id <your_telegram_chat_id>
 
@@ -45,6 +47,7 @@ It is possible to watch more than one airport. Simply run Airport Watcher as man
     ./run.sh --airport 'London City Airport' --bot_token <your_telegram_bot_token> --chat_id <your_telegram_chat_id>
 
 ## Unit Tests
-You can use the following convenience script to run all unit tests:
+As with any other Python app, unit tests can be run this way:
 
-    ./run_tests.sh
+    source venv/bin/activate
+    python3 -m unittest
